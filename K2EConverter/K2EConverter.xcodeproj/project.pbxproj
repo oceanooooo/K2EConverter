@@ -14,6 +14,7 @@
 		8E20C9752BA03C260071BE46 /* K2EConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C9742BA03C260071BE46 /* K2EConverterTests.swift */; };
 		8E20C97F2BA03C260071BE46 /* K2EConverterUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C97E2BA03C260071BE46 /* K2EConverterUITests.swift */; };
 		8E20C9812BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C9802BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift */; };
+		8E20C98E2BA03CE30071BE46 /* Hangeul.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C98D2BA03CE30071BE46 /* Hangeul.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		8E20C97A2BA03C260071BE46 /* K2EConverterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = K2EConverterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E20C97E2BA03C260071BE46 /* K2EConverterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K2EConverterUITests.swift; sourceTree = "<group>"; };
 		8E20C9802BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K2EConverterUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		8E20C98D2BA03CE30071BE46 /* Hangeul.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hangeul.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			children = (
 				8E20C9632BA03C240071BE46 /* K2EConverterApp.swift */,
 				8E20C9652BA03C240071BE46 /* ContentView.swift */,
+				8E20C98D2BA03CE30071BE46 /* Hangeul.swift */,
 				8E20C9672BA03C260071BE46 /* Assets.xcassets */,
 				8E20C9692BA03C260071BE46 /* Preview Content */,
 			);
@@ -257,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E20C98E2BA03CE30071BE46 /* Hangeul.swift in Sources */,
 				8E20C9662BA03C240071BE46 /* ContentView.swift in Sources */,
 				8E20C9642BA03C240071BE46 /* K2EConverterApp.swift in Sources */,
 			);
