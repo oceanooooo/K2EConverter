@@ -168,28 +168,34 @@ struct ContentView: View {
 
             if indexChar != " " {
                 if medialVowels.contains(indexChar) {
-                    if let resultLast = result.last, initialConsonants.contains(String(resultLast)) {   // 초성 중성 있음
-                        result.removeLast()
-                        temp.append(resultLast)
-                        temp.append(indexChar)
-                        if i < input.count-1 && finalConsonants.contains(nextChar) {
-                            // 중성 뒤 자음 존재
-                            if i < input.count-2 && finalConsonants.contains(String(input[input.index(input.startIndex, offsetBy: i+2)])) {
-                                // 중성 뒤 자음 2개 존재
-                                result.append(indexChar)
+                    if let resultLast = result.last {
+                        if initialConsonants.contains(String(resultLast)) {   // 초성 중성 있음
+                            result.removeLast()
+                            temp.append(resultLast)
+                            temp.append(indexChar)
+                            if i < input.count-1 && finalConsonants.contains(nextChar) {
+                                // 중성 뒤 자음 존재
+                                if i < input.count-2 && finalConsonants.contains(String(input[input.index(input.startIndex, offsetBy: i+2)])) {
+                                    // 중성 뒤 자음 2개 존재
+                                } else {
+                                    // 중성 뒤 마지막 자음
+                                }
                             } else {
-                                // 중성 뒤 마지막 자음
+                                // 받침이 없음
+                                // temp를 하나로 병합
+                                let initialCharacter = String(temp[temp.startIndex])
+                                let medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])
+                                let tmp = combineHangul(initial: initialCharacter, medial: medialCharacter)
+                                result.append(tmp ?? "")
+                                temp = ""
                             }
+                        } else if finalConsonants.contains(String(resultLast)) || medialVowels.contains(String(resultLast)) {
+                            result.append(indexChar)
                         } else {
-                            // 받침이 없음
-                            // temp를 하나로 병합
-                            let initialCharacter = String(temp[temp.startIndex])
-                            let medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])
-                            let tmp = combineHangul(initial: initialCharacter, medial: medialCharacter)
-                            result.append(tmp ?? "")
-                            temp = ""
+                            // result의 마지막 글자가 초성, 중성, 종성 모두 해당 안됨
                         }
                     } else {
+                        // 첫글자 모음
                         result.append(indexChar)
                     }
                 } else {
