@@ -44,6 +44,7 @@ struct ContentView: View {
             Button("Convert") {
                 convertedText = convertToKorean(inputString: inputText)
                 resultText = convertToHangul(from: convertedText)
+                print("최종 문자열: \(resultText)")
             }
             Text(resultText)
                 .padding()
@@ -51,10 +52,21 @@ struct ContentView: View {
         .padding()
     }
 
-    func combineHangul(initial: String, medial: String, final: String = "") -> String? {
-        guard let initialIndex = initialConsonants.firstIndex(of: initial),
-              let medialIndex = medialVowels.firstIndex(of: medial),
-              let finalIndex = final.isEmpty ? 0 : finalConsonants.firstIndex(of: final) else { return nil }
+    // 초성 중성 종성 병합 함수
+    func combineHangul(initial: String = "", medial: String = "", final: String = "") -> String? {
+        var initialIndex = 0
+        var medialIndex = 0
+        var finalIndex = 0
+
+        if !initial.isEmpty, let index = initialConsonants.firstIndex(of: initial) {
+            initialIndex = index
+        }
+        if !medial.isEmpty, let index = medialVowels.firstIndex(of: medial) {
+            medialIndex = index
+        }
+        if !final.isEmpty, let index = finalConsonants.firstIndex(of: final) {
+            finalIndex = index
+        }
 
         let unicode = 0xAC00 + (initialIndex * 21 + medialIndex) * 28 + finalIndex
         return String(UnicodeScalar(unicode)!)
@@ -76,29 +88,55 @@ struct ContentView: View {
 
             // 모음일 경우
             if otherVowels.keys.contains(indexChar) {
-                if i > 0 && otherVowels.keys.contains(prevChar) {
-                    // 이미 이중모음으로 변환 완료
-                    continue
-                } else {
-                    if i > 0 && nextIndex < inputString.endIndex && otherVowels.keys.contains(nextChar) {
-                        // i~i+1 이중모음 변환하여 temp에 저장
-                        let doubleVowelKey = indexChar + nextChar
-                        temp = doubleVowels[doubleVowelKey] ?? ""
-                    } else {
-                        // i 모음 변환하여 temp에 저장
-                        temp = otherVowels[indexChar] ?? ""
-                    }
-
-                    // i-1을 pop하여 자음 변환 후 append
-                    if tempString.count > 0 {
-                        if let tempConsonant = tempString.popLast(), let initial = otherConsonants[String(tempConsonant)] {
-                            tempString.append(initial)
+                if i > 0 && otherConsonants.keys.contains(prevChar) {
+                    // MARK: 중성 = 앞에 초성 있음
+                    if i < inputString.count-1 && otherVowels.keys.contains(nextChar) {
+                        // MARK: 현재 연속 모음 중 첫번째 모음 (자-모-모, 자-이중모)
+                        // i-1을 pop하여 자음 변환 후 append
+                        if tempString.count > 0 {
+                            if let tempConsonant = tempString.popLast(), let initial = otherConsonants[String(tempConsonant)] {
+                                tempString.append(initial)
+                            }
                         }
+                        let doubleVowelKey = indexChar + nextChar
+                        if doubleVowels.keys.contains(doubleVowelKey) {
+                            // 이중모음 가능
+                            temp = doubleVowels[doubleVowelKey] ?? ""
+                            tempString.append(temp)
+                        } else {
+                            temp = otherVowels[indexChar] ?? ""
+                            tempString.append(temp)
+                            temp = otherVowels[nextChar] ?? ""
+                            tempString.append(temp)
+                        }
+                        continue
+                    } else {
+                        // MARK: 일반 모음
+                        temp = otherVowels[indexChar] ?? ""
+                        // i-1을 pop하여 자음 변환 후 append
+                        if tempString.count > 0 {
+                            if let tempConsonant = tempString.popLast(), let initial = otherConsonants[String(tempConsonant)] {
+                                tempString.append(initial)
+                            }
+                        }
+                        // temp를 append
+                        tempString.append(temp)
                     }
-                    // temp를 append
-                    tempString.append(temp)
+                } else {
+                    // 앞에 초성 없음 (앞에 모음 or 기타문자)
+                    let pprevIndex = i > 1 ? inputString.index(inputString.startIndex, offsetBy: i-2) : index
+                    let pprevChar = i > 1 ? String(inputString[pprevIndex]) : ""
+                    if i > 1 && otherConsonants.keys.contains(pprevChar) && otherVowels.keys.contains(prevChar) {
+                        temp = otherVowels[indexChar] ?? ""
+                        // 자-모-(모) -> 처리완료
+                    } else {
+                        // 단일 모음 (단, 자음 없이는 이중모음을 만들지 않는다)
+                        temp = otherVowels[indexChar] ?? ""
+                        tempString.append(temp)
+                    }
                 }
             } else {
+                // 모음이 아닌 경우
                 tempString.append(indexChar)
             }
         }
@@ -120,7 +158,6 @@ struct ContentView: View {
                         let doubleConsonantsKey = prevChar + indexChar
                         if let temp = doubleConsonants[doubleConsonantsKey] {
                             // 이미 겹받침으로 변환 완료
-                            continue
                         } else {
                             // 단독 초성 글자
                             char = otherConsonants[indexChar] ?? ""
@@ -152,11 +189,12 @@ struct ContentView: View {
         return resultString
     }
 
-    // 주어진 문자열을 한글로 변환하는 함수
+    // 한글 문자열을 한글자로 병합하는 함수
     func convertToHangul(from input: String) -> String {
         var result = ""
         var temp = "" // 연속된 자음 저장
         var isFinal = false // 종성 여부 확인
+        print("영한 변환된 문자열: \(input)")
 
         for i in 0..<input.count {
             let index = input.index(input.startIndex, offsetBy: i)
@@ -166,60 +204,129 @@ struct ContentView: View {
             let nextChar = nextIndex < input.endIndex ? String(input[nextIndex]) : ""
             let prevChar = i > 0 ? String(input[prevIndex]) : ""
 
-            if indexChar != " " {
-                if medialVowels.contains(indexChar) {
-                    if let resultLast = result.last {
-                        if initialConsonants.contains(String(resultLast)) {   // 초성 중성 있음
-                            result.removeLast()
-                            temp.append(resultLast)
-                            temp.append(indexChar)
-                            if i < input.count-1 && finalConsonants.contains(nextChar) {
-                                // 중성 뒤 자음 존재
-                                if i < input.count-2 && finalConsonants.contains(String(input[input.index(input.startIndex, offsetBy: i+2)])) {
-                                    // 중성 뒤 자음 2개 존재
-                                } else {
-                                    // 중성 뒤 마지막 자음
+            // indexChar = 자음
+            if finalConsonants.contains(indexChar) {
+                // MARK: 자음 분기점 1 -> y:초성1 n:분기점2
+                if i < input.count-1 && medialVowels.contains(nextChar) {
+                    // MARK: 초성 1
+                    // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                    if temp.count > 0 && temp.count < 4 {
+                        var initialCharacter = ""
+                        var medialCharacter = ""
+                        var finalCharacter = ""
+                        initialCharacter = String(temp[temp.startIndex])    // 초성
+                        if temp.count > 1 {
+                            medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
+                            if temp.count > 2 {
+                                finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)]) // 종성
+                            }
+                        }
+                        let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
+                        if temp.count == 1 {
+                            result.append(String(temp[temp.startIndex]))
+                        } else {
+                            result.append(combineChar ?? "")
+                        }
+                        temp = ""
+                    }
+                    temp.append(indexChar)  // 초성 1 temp에 삽입
+                } else {
+                    // MARK: 자음 분기점 2 -> y:분기점3 n:초성2
+                    if i > 0 && medialVowels.contains(prevChar) {
+                        let pprevIndex = i > 1 ? input.index(input.startIndex, offsetBy: i-2) : index
+                        let pprevChar = i > 1 ? String(input[pprevIndex]) : ""
+                        // MARK: 자음 분기점 3 -> y:종성 n:초성3(단독초성)
+                        if i > 1 && initialConsonants.contains(pprevChar) {
+                            // MARK: 종성
+                            temp.append(indexChar)  // 종성 temp에 삽입
+                        } else {
+                            // MARK: 초성 3 = 단독초성
+                            // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                            if temp.count > 0 && temp.count < 4 {
+                                var initialCharacter = ""
+                                var medialCharacter = ""
+                                var finalCharacter = ""
+                                initialCharacter = String(temp[temp.startIndex])    // 초성
+                                if temp.count > 1 {
+                                    medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
+                                    if temp.count > 2 {
+                                        finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)]) // 종성
+                                    }
                                 }
-                            } else {
-                                // 받침이 없음
-                                // temp를 하나로 병합
-                                let initialCharacter = String(temp[temp.startIndex])
-                                let medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])
-                                let tmp = combineHangul(initial: initialCharacter, medial: medialCharacter)
-                                result.append(tmp ?? "")
+                                let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
+                                result.append(combineChar ?? "")
                                 temp = ""
                             }
-                        } else if finalConsonants.contains(String(resultLast)) || medialVowels.contains(String(resultLast)) {
-                            result.append(indexChar)
-                        } else {
-                            // result의 마지막 글자가 초성, 중성, 종성 모두 해당 안됨
+                            temp.append(indexChar)  // 초성 3 temp에 삽입
                         }
                     } else {
-                        // 첫글자 모음
-                        result.append(indexChar)
-                    }
-                } else {
-                    if i > 0 && medialVowels.contains(prevChar) {
-                        if medialVowels.contains(nextChar) {
-                            result.append(indexChar)
-                        } else {
-                            // 받침인 경우
-                            temp.append(indexChar)
-                            // temp를 하나로 병합
-                            let initialCharacter = String(temp[temp.startIndex])
-                            let medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])
-                            let finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)])
-                            let tmp = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
-                            print("tmp: \(tmp)")
-                            result.append(tmp ?? "")
+                        // MARK: 초성 2
+                        // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                        if temp.count > 0 && temp.count < 4 {
+                            var initialCharacter = ""
+                            var medialCharacter = ""
+                            var finalCharacter = ""
+                            initialCharacter = String(temp[temp.startIndex])    // 초성
+                            if temp.count > 1 {
+                                medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
+                                if temp.count > 2 {
+                                    finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)]) // 종성
+                                }
+                            }
+                            let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
+                            result.append(combineChar ?? "")
                             temp = ""
                         }
-                    } else {
-                        result.append(indexChar)
+                        temp.append(indexChar)  // 초성 2 temp에 삽입
                     }
                 }
+            } else if medialVowels.contains(indexChar) {
+                // MARK: 중성 분기점 -> y:중성 n:단일모음
+                if i > 0 && initialConsonants.contains(prevChar) {
+                    // MARK: 중성
+                    temp.append(indexChar)
+                } else {
+                    // MARK: 단일모음
+                    result.append(indexChar)  // 단일모음 temp에 삽입
+                }
             } else {
-                result.append(" ")
+                // 마지막 temp 처리: temp를 하나로 병합 후 result에 삽입
+                if temp.count > 0 && temp.count < 4 {
+                    var initialCharacter = ""
+                    var medialCharacter = ""
+                    var finalCharacter = ""
+                    initialCharacter = String(temp[temp.startIndex])    // 초성
+                    if temp.count > 1 {
+                        medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
+                        if temp.count > 2 {
+                            finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)]) // 종성
+                        }
+                    }
+                    let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
+                    result.append(combineChar ?? "")
+                    temp = ""
+                }
+                // 한글 이외: 숫자, 띄어쓰기, 특수문자 등
+                result.append(indexChar)
+            }
+            if i == input.count-1 {
+                // 마지막 temp 처리: temp를 하나로 병합 후 result에 삽입
+                if temp.count > 0 && temp.count < 4 {
+                    var initialCharacter = ""
+                    var medialCharacter = ""
+                    var finalCharacter = ""
+                    initialCharacter = String(temp[temp.startIndex])    // 초성
+                    if temp.count > 1 {
+                        medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
+                        if temp.count > 2 {
+                            finalCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 2)]) // 종성
+                        }
+                    }
+                    let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
+                    result.append(combineChar ?? "")
+                    temp = ""
+                }
+                print("끝")
             }
         }
 
