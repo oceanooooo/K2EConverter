@@ -210,10 +210,12 @@ struct ContentView: View {
                 if i < input.count-1 && medialVowels.contains(nextChar) {
                     // MARK: 초성 1
                     // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                    print("초성 1 처리")
                     if temp.count > 0 && temp.count < 4 {
                         var initialCharacter = ""
                         var medialCharacter = ""
                         var finalCharacter = ""
+                        print("temp: \(temp)")
                         initialCharacter = String(temp[temp.startIndex])    // 초성
                         if temp.count > 1 {
                             medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
@@ -223,9 +225,13 @@ struct ContentView: View {
                         }
                         let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
                         if temp.count == 1 {
-                            result.append(String(temp[temp.startIndex]))
+                            result.append(temp)
+                            print("(초성1)이번 병합글자: \(temp)")
+                            print("result 230: \(result)")
                         } else {
                             result.append(combineChar ?? "")
+                            print("(초성1)이번 병합글자 \(combineChar): 초-\(initialCharacter) 중-\(medialCharacter) 종-\(finalCharacter)")
+                            print("result 234: \(result)")
                         }
                         temp = ""
                     }
@@ -238,10 +244,12 @@ struct ContentView: View {
                         // MARK: 자음 분기점 3 -> y:종성 n:초성3(단독초성)
                         if i > 1 && initialConsonants.contains(pprevChar) {
                             // MARK: 종성
+                            print("종성 처리")
                             temp.append(indexChar)  // 종성 temp에 삽입
                         } else {
                             // MARK: 초성 3 = 단독초성
                             // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                            print("초성 3 단독초성 처리")
                             if temp.count > 0 && temp.count < 4 {
                                 var initialCharacter = ""
                                 var medialCharacter = ""
@@ -254,7 +262,15 @@ struct ContentView: View {
                                     }
                                 }
                                 let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
-                                result.append(combineChar ?? "")
+                                if temp.count == 1 {
+                                    result.append(temp)
+                                    print("(초성3)이번 병합글자: \(temp)")
+                                    print("result 268: \(result)")
+                                } else {
+                                    result.append(combineChar ?? "")
+                                    print("(초성3)이번 병합글자 \(combineChar): 초-\(initialCharacter) 중-\(medialCharacter) 종-\(finalCharacter)")
+                                    print("result 272: \(result)")
+                                }
                                 temp = ""
                             }
                             temp.append(indexChar)  // 초성 3 temp에 삽입
@@ -262,10 +278,12 @@ struct ContentView: View {
                     } else {
                         // MARK: 초성 2
                         // 이전 temp 처리: temp를 하나로 병합 후 result에 삽입
+                        print("초성 2 처리")
                         if temp.count > 0 && temp.count < 4 {
                             var initialCharacter = ""
                             var medialCharacter = ""
                             var finalCharacter = ""
+                            print("temp: \(temp)")
                             initialCharacter = String(temp[temp.startIndex])    // 초성
                             if temp.count > 1 {
                                 medialCharacter = String(temp[temp.index(temp.startIndex, offsetBy: 1)])    // 중성
@@ -274,7 +292,15 @@ struct ContentView: View {
                                 }
                             }
                             let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
-                            result.append(combineChar ?? "")
+                            if temp.count == 1 {
+                                result.append(temp)
+                                print("(초성2)이번 병합글자: \(temp)")
+                                print("result 298: \(result)")
+                            } else {
+                                result.append(combineChar ?? "")
+                                print("(초성2)이번 병합글자 \(combineChar): 초-\(initialCharacter) 중-\(medialCharacter) 종-\(finalCharacter)")
+                                print("result 302: \(result)")
+                            }
                             temp = ""
                         }
                         temp.append(indexChar)  // 초성 2 temp에 삽입
@@ -284,13 +310,16 @@ struct ContentView: View {
                 // MARK: 중성 분기점 -> y:중성 n:단일모음
                 if i > 0 && initialConsonants.contains(prevChar) {
                     // MARK: 중성
+                    print("중성 처리")
                     temp.append(indexChar)
                 } else {
                     // MARK: 단일모음
+                    print("단일모음 처리")
                     result.append(indexChar)  // 단일모음 temp에 삽입
+                    print("result 319: \(result)")
                 }
             } else {
-                // 마지막 temp 처리: temp를 하나로 병합 후 result에 삽입
+                // 기타문자 전 temp 처리: temp를 하나로 병합 후 result에 삽입
                 if temp.count > 0 && temp.count < 4 {
                     var initialCharacter = ""
                     var medialCharacter = ""
@@ -303,11 +332,22 @@ struct ContentView: View {
                         }
                     }
                     let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
-                    result.append(combineChar ?? "")
+                    if temp.count == 1 {
+                        result.append(temp)
+                        print("(기타)이번 병합글자: \(temp)")
+                        print("result 338: \(result)")
+                    } else {
+                        result.append(combineChar ?? "")
+                        print("(기타)이번 병합글자 \(combineChar): 초-\(initialCharacter) 중-\(medialCharacter) 종-\(finalCharacter)")
+                        print("result 342: \(result)")
+                    }
                     temp = ""
                 }
-                // 한글 이외: 숫자, 띄어쓰기, 특수문자 등
-                result.append(indexChar)
+                // 한글 이외: 숫자, 띄어쓰기, 특수문자 등 (단, ㅃㅉㄸ는 왜인지 모르게 한글 이외 취급을 받고 있었다)
+                if temp.count != 0 && (indexChar != "ㅃ" || indexChar != "ㅉ" || indexChar != "ㄸ") {
+                    result.append(indexChar)
+                    print("result 348: \(result)")
+                }
             }
             if i == input.count-1 {
                 // 마지막 temp 처리: temp를 하나로 병합 후 result에 삽입
@@ -323,9 +363,31 @@ struct ContentView: View {
                         }
                     }
                     let combineChar = combineHangul(initial: initialCharacter, medial: medialCharacter, final: finalCharacter)
-                    result.append(combineChar ?? "")
+                    if temp.count == 1 {
+                        result.append(temp)
+                        print("(마지막)이번 병합글자: \(temp)")
+                        print("result 367: \(result)")
+                    } else {
+                        result.append(combineChar ?? "")
+                        print("(마지막)이번 병합글자 \(combineChar): 초-\(initialCharacter) 중-\(medialCharacter) 종-\(finalCharacter)")
+                        print("result 371: \(result)")
+                    }
                     temp = ""
                 }
+            }
+            if temp.count == 0 && (indexChar == "ㅃ" || indexChar == "ㅉ" || indexChar == "ㄸ") {
+                print("temp: \(temp)")
+                let bugtemp = temp
+                temp = indexChar
+//                temp.append(bugtemp)
+                print("temp + bugtemp: \(temp)")
+                print("result 382: \(result)")
+            }
+
+            print("이번글자: \(indexChar)")
+            // ㅃ,ㅉ,ㄸ는 초성으로 취급을 안하고 있음
+
+            if i == input.count-1 {
                 print("끝")
             }
         }
