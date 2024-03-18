@@ -38,7 +38,6 @@ class HangeulViewModel: ObservableObject {
     func convertInput(_ input: String) {
         convertedText = convertToKorean(inputString: input)
         resultText = convertToHangul(from: convertedText)
-        print("최종 문자열: \(resultText)")
     }
 
     // 영어 문자열을 한글로 변환하는 함수
@@ -162,7 +161,6 @@ class HangeulViewModel: ObservableObject {
     private func convertToHangul(from input: String) -> String {
         var result = ""
         var temp = "" // 연속된 자음 저장
-        print("영한 변환된 문자열: \(input)")
 
         for i in 0..<input.count {
             let index = input.index(input.startIndex, offsetBy: i)

@@ -27,7 +27,7 @@ struct ContentView: View {
         VStack(alignment: .leading) {
             HStack {
                 Spacer()
-                Text("한영 변환문제 수정")
+                Text("한영자판 변환문제 수정")
                     .font(.title)
                     .fontWeight(.bold)
                 Spacer()
@@ -36,7 +36,6 @@ struct ContentView: View {
             Divider()
                 .padding(.bottom, 24)
             Text("영어 자판으로 입력한 문장")
-                .foregroundColor(.black)
                 .font(.headline)
             // Text input area
             ZStack {
@@ -69,7 +68,6 @@ struct ContentView: View {
             }
             .padding()
             Text("한글 자판으로 수정한 문장")
-                .foregroundColor(.black)
                 .font(.headline)
             // Text output area
             ZStack {
