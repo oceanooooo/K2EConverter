@@ -15,6 +15,7 @@
 		8E20C97F2BA03C260071BE46 /* K2EConverterUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C97E2BA03C260071BE46 /* K2EConverterUITests.swift */; };
 		8E20C9812BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C9802BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift */; };
 		8E20C98E2BA03CE30071BE46 /* HangeulViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E20C98D2BA03CE30071BE46 /* HangeulViewModel.swift */; };
+		8E5D3C612BC2EF0E00FD8E5B /* extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5D3C602BC2EF0E00FD8E5B /* extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		8E20C97E2BA03C260071BE46 /* K2EConverterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K2EConverterUITests.swift; sourceTree = "<group>"; };
 		8E20C9802BA03C260071BE46 /* K2EConverterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K2EConverterUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8E20C98D2BA03CE30071BE46 /* HangeulViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HangeulViewModel.swift; sourceTree = "<group>"; };
+		8E5D3C602BC2EF0E00FD8E5B /* extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				8E20C98D2BA03CE30071BE46 /* HangeulViewModel.swift */,
 				8E20C9672BA03C260071BE46 /* Assets.xcassets */,
 				8E20C9692BA03C260071BE46 /* Preview Content */,
+				8E5D3C602BC2EF0E00FD8E5B /* extension.swift */,
 			);
 			path = K2EConverter;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				8E20C98E2BA03CE30071BE46 /* HangeulViewModel.swift in Sources */,
 				8E20C9662BA03C240071BE46 /* ContentView.swift in Sources */,
 				8E20C9642BA03C240071BE46 /* K2EConverterApp.swift in Sources */,
+				8E5D3C612BC2EF0E00FD8E5B /* extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,35 +12,21 @@ struct ContentView: View {
     @State private var inputText: String = ""
 
     var body: some View {
-        /*
-         VStack {
-         TextField("Enter text here", text: $inputText)
-         .padding()
-         Button("Convert") {
-         viewModel.convertInput(inputText)
-         }
-         Text(viewModel.resultText)
-         .padding()
-         }
-         .padding()
-         */
-        VStack(alignment: .leading) {
-            HStack {
-                Spacer()
-                Text("한영자판 변환문제 수정")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
-            }
-            .padding(.bottom, 12)
-            Divider()
-                .padding(.bottom, 24)
-            Text("영어 자판으로 입력한 문장")
-                .font(.headline)
-            // Text input area
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.gray, lineWidth: 1)
+        ZStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Spacer()
+                    Text("한영자판 변환문제 수정")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Spacer()
+                }
+                .padding(.bottom, 12)
+                Divider()
+                    .padding(.bottom, 24)
+                Text("영어 자판으로 입력한 문장")
+                    .font(.headline)
+                // MARK: - 입력창
                 VStack(alignment: .leading) {
                     TextEditor(text: $inputText)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -58,21 +44,23 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-            }
-            HStack {
-                Spacer()
-                Image(systemName: "arrow.down")
-                    .foregroundColor(.blue)
-                    .font(.title2)
-                Spacer()
-            }
-            .padding()
-            Text("한글 자판으로 수정한 문장")
-                .font(.headline)
-            // Text output area
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.gray, lineWidth: 1)
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray, lineWidth: 1)
+                }
+                .frame(minHeight: 180)
+
+                HStack {
+                    Spacer()
+                    Image(systemName: "arrow.down")
+                        .foregroundColor(.blue)
+                        .font(.title2)
+                    Spacer()
+                }
+                .padding()
+                Text("한글 자판으로 수정한 문장")
+                    .font(.headline)
+                // MARK: - 출력창
                 VStack(alignment: .leading) {
                     Text(viewModel.resultText)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -89,28 +77,34 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-            }
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray, lineWidth: 1)
+                }
+                .frame(minHeight: 180)
 
-            Spacer()
+                Spacer()
 
-            // Translation button
-            Button(action: {
-                // Perform translation
-                viewModel.convertInput(inputText)
-            }) {
-                Capsule()
-                    .frame(height: 48)
-                    .overlay {
-                        Text("변환하기")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .fontWeight(.bold)
-                    }
-                    .padding(.top, 48)
+                // Translation button
+                Button(action: {
+                    // Perform translation
+                    viewModel.convertInput(inputText)
+                }) {
+                    Capsule()
+                        .frame(height: 48)
+                        .overlay {
+                            Text("변환하기")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .fontWeight(.bold)
+                        }
+                        .padding(.top, 48)
+                }
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
+            .padding()
         }
-        .padding()
+        .onAppear (perform : UIApplication.shared.hideKeyboard)
     }
 }
 
